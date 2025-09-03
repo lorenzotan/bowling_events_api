@@ -1,0 +1,15 @@
+services:
+  api:
+    build: .
+    # entrypoint: fastapi run app/main.py
+    entrypoint: sleep infinity
+    # environment:
+    #   - DEBUG=1
+    image: bowl:api
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/opt/api
+
+volumes:
+  postgres_data:
