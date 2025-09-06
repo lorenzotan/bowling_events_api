@@ -4,7 +4,7 @@ services:
     depends_on:
       - postgres
     # entrypoint: fastapi run app/main.py
-    entrypoint: sleep infinity
+    entrypoint: bash -c "/opt/api/db/init_db.sh && sleep infinity"
     # environment:
     #   - DEBUG=1
     image: bowl:api
