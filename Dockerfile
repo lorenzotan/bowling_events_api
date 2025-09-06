@@ -1,9 +1,10 @@
-FROM python:3.13.3-slim-bookworm
+FROM python:3.13.7-slim-trixie
 
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
             # curl to download uv
             curl \
+            libpq5 \
             && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
