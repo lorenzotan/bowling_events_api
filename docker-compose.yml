@@ -1,8 +1,10 @@
 services:
   api:
     build: .
+    depends_on:
+      - postgres
     # entrypoint: fastapi run app/main.py
-    entrypoint: sleep infinity
+    entrypoint: bash -c "/opt/api/db/init_db.sh && sleep infinity"
     # environment:
     #   - DEBUG=1
     image: bowl:api
@@ -11,5 +13,14 @@ services:
     volumes:
       - .:/opt/api
 
-volumes:
-  postgres_data:
+  postgres:
+    environment:
+      - POSTGRES_DB=bowling_events
+      - POSTGRES_PASSWORD=bowl123
+      - POSTGRES_USER=bowler
+#       - "POSTGRES_HOST_AUTH_METHOD=trust"
+    image: postgres:17.5-bookworm
+    ports:
+      - "5432:5432"
+    # volumes:
+    #   - postgres_data:/var/lib/postgresql/data/
