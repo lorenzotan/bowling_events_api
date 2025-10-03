@@ -1,4 +1,16 @@
-FROM python:3.13.7-slim-trixie
+# syntax=docker/dockerfile:1
+
+FROM python:3.13.7-slim-bookworm
+
+ARG USER=bowler
+
+# Prevents Python from writing pyc files to disk
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    # Prevents Python from buffering stdout and stderr
+    PYTHONUNBUFFERED=1 \
+    # Ensure the installed binary is on the `PATH`
+    PATH="/opt/api/.venv/bin:/home/${USER}/.local/bin/:$PATH" \
+    UV_INSTALL_DIR="/home/${USER}/.local/bin"
 
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
