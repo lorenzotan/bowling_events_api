@@ -14,9 +14,12 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
+            build-essential \
             # curl to download uv
             curl \
-            libpq5 \
+            gcc \
+            libpq-dev \
+            python3-dev \
             && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -52,4 +55,4 @@ COPY ./app/* /opt/api/app
 EXPOSE 8000
  
 # Run FastAPI development server
-# CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["fastapi", "run", "app/main.py"]
