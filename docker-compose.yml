@@ -3,8 +3,8 @@ services:
     build: .
     depends_on:
       - postgres
-    # entrypoint: fastapi run app/main.py
-    entrypoint: bash -c "/opt/api/app/db/init_db.sh && sleep infinity"
+    # entrypoint: bash -c "/opt/api/app/db/init_db.sh && sleep infinity"
+    entrypoint: bash -c "/opt/api/app/db/init_db.sh && fastapi run app/main.py"
     # environment:
     #   - DEBUG=1
     image: bowl:api
