@@ -5,11 +5,12 @@ from sqlmodel import (
     select,
     Session
 )
-from ..db.models import Location
+from typing import List
+from app.db.models import Location
 
 
 app = FastAPI()
-router = APIRouter()
+router = APIRouter(prefix="/api/v1")
 
 postgres_url = config("DATABASE_URL")
 engine = create_engine(postgres_url, echo=True)
@@ -26,10 +27,9 @@ async def write_locations(location: Location):
 
 
 @router.get("/locations/")
-async def read_locations():
+async def read_locations() -> List[Location]:
     with Session(engine) as session:
-        locations = session.exec(select(Location)).all()
-        return locations
+        return session.exec(select(Location)).all()
 
 """
 JSON Response Template
