@@ -1,9 +1,5 @@
 from datetime import date, time
-from sqlmodel import (
-    Field,
-    Relationship,
-    SQLModel
-)
+from sqlmodel import Field, Relationship, SQLModel
 
 
 class Location(SQLModel, table=True):
@@ -13,7 +9,7 @@ class Location(SQLModel, table=True):
     city: str
     state: str
     zip: str
-    events: list['Event'] = Relationship(back_populates='location')
+    events: list["Event"] = Relationship(back_populates="location")
 
 
 class Event(SQLModel, table=True):
@@ -25,6 +21,6 @@ class Event(SQLModel, table=True):
     game_day: str | None = None
     game_time: time | None = None
     registration_url: str | None = None
-    location_id: int | None = Field(default=None, foreign_key='location.id')
+    location_id: int | None = Field(default=None, foreign_key="location.id")
 
-    location: Location | None = Relationship(back_populates='events')
+    location: Location | None = Relationship(back_populates="events")

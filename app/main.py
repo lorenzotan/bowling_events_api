@@ -17,5 +17,6 @@ app.add_middleware(
 async def root():
     return {"message": "Hello World"}
 
+
 app.include_router(events.router)
 app.include_router(locations.router)

@@ -1,19 +1,12 @@
-from decouple import config
 from fastapi import APIRouter, FastAPI
-from sqlmodel import (
-    create_engine,
-    select,
-    Session
-)
+from sqlmodel import select, Session
 from typing import List
 from app.db.models import Location
+from app.db.database import engine
 
 
 app = FastAPI()
 router = APIRouter(prefix="/api/v1")
-
-postgres_url = config("DATABASE_URL")
-engine = create_engine(postgres_url, echo=True)
 
 
 @router.post("/locations/")
@@ -30,6 +23,7 @@ async def write_locations(location: Location):
 async def read_locations() -> List[Location]:
     with Session(engine) as session:
         return session.exec(select(Location)).all()
+
 
 """
 JSON Response Template

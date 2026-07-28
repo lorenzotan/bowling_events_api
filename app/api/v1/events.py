@@ -1,15 +1,12 @@
-from decouple import config
 from fastapi import APIRouter, FastAPI
-from sqlmodel import create_engine, select, Session
+from sqlmodel import select, Session
 from typing import List
 from app.db.models import Event
+from app.db.database import engine
 
 
 app = FastAPI()
 router = APIRouter(prefix="/api/v1")
-
-postgres_url = config("DATABASE_URL")
-engine = create_engine(postgres_url, echo=True)
 
 
 @router.post("/events/")
@@ -25,6 +22,7 @@ async def write_event(event: Event):
 async def read_events() -> List[Event]:
     with Session(engine) as session:
         return session.exec(select(Event)).all()
+
 
 """
 JSON Response Template
