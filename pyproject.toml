@@ -18,3 +18,27 @@ dev = [
     "pytest>=8.3.5",
     "ruff==0.12.2",
 ]
+
+[tool.ruff]
+line-length = 79
+target-version = "py313"
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort (import grouping/ordering — PEP 8 "Imports")
+    "N",    # pep8-naming (PEP 8 "Naming Conventions")
+    "B",    # flake8-bugbear (common bug-prone patterns)
+    "SIM",  # flake8-simplify (needless complexity)
+    "C90",  # mccabe complexity (long method / large class)
+    "PLR",  # pylint refactor (long parameter list, magic values, ...)
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.per-file-ignores]
+# Asserting literal expected values is idiomatic in tests, not a smell.
+"tests/*" = ["PLR2004"]

@@ -1,9 +1,10 @@
-from fastapi import APIRouter, FastAPI
-from sqlmodel import select, Session
 from typing import List
-from app.db.models import Event
-from app.db.database import engine
 
+from fastapi import APIRouter, FastAPI
+from sqlmodel import Session, select
+
+from app.db.database import engine
+from app.db.models import Event
 
 app = FastAPI()
 router = APIRouter(prefix="/api/v1")

@@ -8,10 +8,9 @@ Create Date: 2025-09-04 12:39:40.154456
 
 from typing import Sequence, Union
 
-from alembic import op
 import sqlalchemy as sa
 import sqlmodel
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "5aa0ca049eac"
@@ -27,7 +26,9 @@ def upgrade() -> None:
         "location",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("name", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-        sa.Column("address", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+        sa.Column(
+            "address", sqlmodel.sql.sqltypes.AutoString(), nullable=False
+        ),
         sa.Column("city", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
         sa.Column("state", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
         sa.Column("zip", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
@@ -37,13 +38,19 @@ def upgrade() -> None:
         "event",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("name", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-        sa.Column("category", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+        sa.Column(
+            "category", sqlmodel.sql.sqltypes.AutoString(), nullable=False
+        ),
         sa.Column("start_date", sa.Date(), nullable=True),
         sa.Column("end_date", sa.Date(), nullable=True),
-        sa.Column("game_day", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+        sa.Column(
+            "game_day", sqlmodel.sql.sqltypes.AutoString(), nullable=True
+        ),
         sa.Column("game_time", sa.Time(), nullable=True),
         sa.Column(
-            "registration_url", sqlmodel.sql.sqltypes.AutoString(), nullable=True
+            "registration_url",
+            sqlmodel.sql.sqltypes.AutoString(),
+            nullable=True,
         ),
         sa.Column("location_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(

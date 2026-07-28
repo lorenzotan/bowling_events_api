@@ -1,9 +1,9 @@
+from decouple import config
 from models import Location
 from sqlmodel import (
-    create_engine,
     Session,
+    create_engine,
 )
-from decouple import config
 
 postgres_url = config("DATABASE_URL")
 
