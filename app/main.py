@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from app.api.v1 import events, locations
 
 app = FastAPI()
@@ -16,6 +17,7 @@ app.add_middleware(
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
+
 
 app.include_router(events.router)
 app.include_router(locations.router)
