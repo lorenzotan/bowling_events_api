@@ -12,6 +12,8 @@ services:
       - "8000:8000"
     volumes:
       - .:/opt/api
+      # keep the image's Linux venv instead of the host's
+      - /opt/api/.venv
 
   postgres:
     environment:
