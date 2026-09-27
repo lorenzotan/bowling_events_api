@@ -1,10 +1,9 @@
-from typing import List
-
 from fastapi import APIRouter, FastAPI
+from sqlalchemy.orm import selectinload
 from sqlmodel import Session, select
 
 from app.db.database import engine
-from app.db.models import Event
+from app.db.models import Event, EventPublic
 
 app = FastAPI()
 router = APIRouter(prefix="/api/v1")
@@ -20,9 +19,15 @@ async def write_event(event: Event):
 
 
 @router.get("/events/", tags=["events"])
-async def read_events() -> List[Event]:
+async def read_events() -> list[EventPublic]:
+    """Return all events, soonest first, each with its location embedded."""
+    statement = (
+        select(Event)
+        .options(selectinload(Event.location))
+        .order_by(Event.start_date)
+    )
     with Session(engine) as session:
-        return session.exec(select(Event)).all()
+        return session.exec(statement).all()
 
 
 """
@@ -36,7 +41,9 @@ JSON Response Template
     "game_day": "<game_day>",
     "game_time": "<game_time>",
     "registration_url": "<url>",
+    "location_id": "<location_id>",
     "location": {
+        "id": "<location_id>",
         "name": "<bowling_house_name>",
         "address": "<address>",
         "city": "<city>",
