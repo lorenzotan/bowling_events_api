@@ -8,15 +8,13 @@ ARG USER=bowler
 ENV PYTHONDONTWRITEBYTECODE=1 \
     # Prevents Python from buffering stdout and stderr
     PYTHONUNBUFFERED=1 \
-    # Ensure the installed binary is on the `PATH`
-    PATH="/opt/api/.venv/bin:/home/${USER}/.local/bin/:$PATH" \
-    UV_INSTALL_DIR="/home/${USER}/.local/bin"
+    # Ensure the venv binaries are on the `PATH`
+    PATH="/opt/api/.venv/bin:$PATH"
 
+# Build dependencies for psycopg2
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
             build-essential \
-            # curl to download uv
-            curl \
             gcc \
             libpq-dev \
             python3-dev \
@@ -25,34 +23,24 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Install UV
-ADD https://astral.sh/uv/install.sh /uv-installer.sh
-RUN chmod -R 755 /uv-installer.sh && /uv-installer.sh && rm /uv-installer.sh
- 
-# Set environment variables 
-# Prevents Python from writing pyc files to disk
-ENV PYTHONDONTWRITEBYTECODE=1
-# Prevents Python from buffering stdout and stderr
-ENV PYTHONUNBUFFERED=1 
-# Ensure the installed binary is on the `PATH`
-ENV PATH="/opt/api/.venv/bin:/root/.local/bin/:$PATH"
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# Create the app directory
-RUN mkdir -p /opt/api/app
- 
 # Set the working directory inside the container
 WORKDIR /opt/api/
 
-# install packages
-COPY ./pyproject.toml /opt/api/
-RUN uv venv .venv && \
-    uv sync
-# uv sync --no-dev
- 
+# Install locked runtime dependencies
+COPY pyproject.toml uv.lock ./
+RUN uv sync --locked --no-dev
+
 # Copy the FastAPI project to the container
-COPY ./app/* /opt/api/app
- 
+COPY app/ ./app/
+
+# Run as a non-root user
+RUN useradd --create-home ${USER} && chown -R ${USER} /opt/api
+USER ${USER}
+
 # Expose the FastAPI port
 EXPOSE 8000
- 
-# Run FastAPI development server
+
+# Run FastAPI production server
 CMD ["fastapi", "run", "app/main.py"]

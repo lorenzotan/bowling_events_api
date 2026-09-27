@@ -1,0 +1,18 @@
+# Local environments & caches
+.venv
+.cache
+.ruff_cache
+.pytest_cache
+**/__pycache__
+
+# Not needed at runtime
+.git
+flyers/
+bruno/
+tests/
+.vscode
+.claude
+.DS_Store
+
+# Secrets
+.env
