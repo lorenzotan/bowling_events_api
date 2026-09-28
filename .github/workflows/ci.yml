@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.13"
+  # Engine creation is lazy, so tests import fine against this placeholder
+  # while actually running on the in-memory SQLite engine from conftest.py.
+  DATABASE_URL: postgresql://bowler:bowl123@localhost:5432/bowling_events
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: uv run --only-dev ruff check .
+      - run: uv run --only-dev ruff format --check .
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: ${{ env.PYTHON_VERSION }}
+      # psycopg2 builds from source and needs pg_config
+      - run: sudo apt-get update && sudo apt-get install -y libpq-dev
+      - run: uv sync --locked
+      - run: uv run pytest
+
+  migrations:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17.5-bookworm
+        env:
+          POSTGRES_DB: bowling_events
+          POSTGRES_PASSWORD: bowl123
+          POSTGRES_USER: bowler
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U bowler -d bowling_events"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: sudo apt-get update && sudo apt-get install -y libpq-dev
+      - run: uv sync --locked
+      - name: Apply migrations to Postgres
+        working-directory: app/db
+        run: uv run alembic upgrade head
+      - name: Downgrade and re-apply to verify reversibility
+        working-directory: app/db
+        run: |
+          uv run alembic downgrade base
+          uv run alembic upgrade head
+
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: bowl:api
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
