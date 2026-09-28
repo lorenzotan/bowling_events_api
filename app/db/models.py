@@ -3,18 +3,28 @@ from datetime import date, time
 from sqlmodel import Field, Relationship, SQLModel
 
 
-class Location(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+class LocationBase(SQLModel):
+    """Fields shared by the Location table and its request model."""
+
     name: str
     address: str
     city: str
     state: str
     zip: str
+
+
+class Location(LocationBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
     events: list["Event"] = Relationship(back_populates="location")
 
 
-class Event(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+class LocationCreate(LocationBase):
+    """Request body for POST /locations/."""
+
+
+class EventBase(SQLModel):
+    """Fields shared by the Event table and its API response model."""
+
     name: str
     category: str
     start_date: date | None = None
@@ -24,4 +34,18 @@ class Event(SQLModel, table=True):
     registration_url: str | None = None
     location_id: int | None = Field(default=None, foreign_key="location.id")
 
+
+class Event(EventBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
     location: Location | None = Relationship(back_populates="events")
+
+
+class EventCreate(EventBase):
+    """Request body for POST /events/."""
+
+
+class EventPublic(EventBase):
+    """Event as returned by GET /events/, with its location embedded."""
+
+    id: int
+    location: Location | None = None

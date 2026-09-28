@@ -4,14 +4,15 @@ from fastapi import APIRouter, FastAPI
 from sqlmodel import Session, select
 
 from app.db.database import engine
-from app.db.models import Location
+from app.db.models import Location, LocationCreate
 
 app = FastAPI()
 router = APIRouter(prefix="/api/v1")
 
 
 @router.post("/locations/")
-async def write_locations(location: Location):
+async def write_locations(body: LocationCreate):
+    location = Location.model_validate(body)
     with Session(engine) as session:
         session.add(location)
         session.commit()
