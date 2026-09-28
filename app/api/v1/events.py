@@ -3,14 +3,15 @@ from sqlalchemy.orm import selectinload
 from sqlmodel import Session, select
 
 from app.db.database import engine
-from app.db.models import Event, EventPublic
+from app.db.models import Event, EventCreate, EventPublic
 
 app = FastAPI()
 router = APIRouter(prefix="/api/v1")
 
 
 @router.post("/events/")
-async def write_event(event: Event):
+async def write_event(body: EventCreate):
+    event = Event.model_validate(body)
     with Session(engine) as session:
         session.add(event)
         session.commit()

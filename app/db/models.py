@@ -3,14 +3,23 @@ from datetime import date, time
 from sqlmodel import Field, Relationship, SQLModel
 
 
-class Location(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+class LocationBase(SQLModel):
+    """Fields shared by the Location table and its request model."""
+
     name: str
     address: str
     city: str
     state: str
     zip: str
+
+
+class Location(LocationBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
     events: list["Event"] = Relationship(back_populates="location")
+
+
+class LocationCreate(LocationBase):
+    """Request body for POST /locations/."""
 
 
 class EventBase(SQLModel):
@@ -29,6 +38,10 @@ class EventBase(SQLModel):
 class Event(EventBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     location: Location | None = Relationship(back_populates="events")
+
+
+class EventCreate(EventBase):
+    """Request body for POST /events/."""
 
 
 class EventPublic(EventBase):

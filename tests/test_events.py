@@ -1,9 +1,3 @@
-from datetime import date
-
-from sqlmodel import Session
-
-from app.db.models import Event
-
 LOCATION_PAYLOAD = {
     "name": "Cal Bowl",
     "address": "2500 E Carson St",
@@ -81,19 +75,38 @@ def test_read_events_without_location_has_null_location(client):
     assert data[0]["location"] is None
 
 
-def test_read_events_sorted_by_start_date(client, engine):
-    # Inserted directly: POST /events/ takes the table model as its body,
-    # which SQLModel doesn't validate, so date strings aren't parsed.
-    with Session(engine) as session:
-        for name, start_date in [
-            ("Late", date(2026, 11, 1)),
-            ("Early", date(2026, 10, 1)),
-            ("Middle", date(2026, 10, 15)),
-        ]:
-            session.add(
-                Event(name=name, category="league", start_date=start_date)
-            )
-        session.commit()
+def test_create_event_parses_date_and_time(client):
+    client.post(
+        "/api/v1/events/",
+        json={
+            **EVENT_PAYLOAD,
+            "start_date": "2026-10-06",
+            "game_time": "18:30:00",
+        },
+    )
+
+    data = client.get("/api/v1/events/").json()
+
+    assert data[0]["start_date"] == "2026-10-06"
+    assert data[0]["game_time"] == "18:30:00"
+
+
+def test_create_event_missing_category_is_rejected(client):
+    response = client.post("/api/v1/events/", json={"name": "No Category"})
+
+    assert response.status_code == 422
+
+
+def test_read_events_sorted_by_start_date(client):
+    for name, start_date in [
+        ("Late", "2026-11-01"),
+        ("Early", "2026-10-01"),
+        ("Middle", "2026-10-15"),
+    ]:
+        client.post(
+            "/api/v1/events/",
+            json={**EVENT_PAYLOAD, "name": name, "start_date": start_date},
+        )
 
     data = client.get("/api/v1/events/").json()
 
