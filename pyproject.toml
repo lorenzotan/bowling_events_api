@@ -10,7 +10,7 @@ dependencies = [
     "fastapi[standard]>=0.115.14",
     "psycopg2>=2.9.10",
     "python-decouple>=3.8",
-    "sqlmodel>=0.0.24",
+    "sqlmodel>=0.0.47",
 ]
 
 [dependency-groups]
