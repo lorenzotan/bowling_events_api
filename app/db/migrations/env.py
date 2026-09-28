@@ -1,5 +1,8 @@
 from logging.config import fileConfig
 
+# Registers the table models on SQLModel.metadata; without it autogenerate
+# sees no tables and emits a migration that drops them all.
+import models  # noqa: F401
 from alembic import context
 
 # This will load .env file with DATABASE_URL
