@@ -75,6 +75,9 @@ jobs:
         run: |
           uv run alembic downgrade base
           uv run alembic upgrade head
+      - name: Fail if models have drifted from migrations
+        working-directory: app/db
+        run: uv run alembic check
 
   docker-build:
     runs-on: ubuntu-latest
