@@ -12,3 +12,9 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    ignore:
+      # Stay on Python 3.14; patch releases still come through.
+      - dependency-name: python
+        update-types:
+          - version-update:semver-major
+          - version-update:semver-minor
