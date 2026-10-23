@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 env:
-  PYTHON_VERSION: "3.13"
+  PYTHON_VERSION: "3.14"
   # Engine creation is lazy, so tests import fine against this placeholder
   # while actually running on the in-memory SQLite engine from conftest.py.
   DATABASE_URL: postgresql://bowler:bowl123@localhost:5432/bowling_events

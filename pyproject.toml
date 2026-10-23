@@ -3,7 +3,7 @@ name = "bowl"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.14,<3.15"
 dependencies = [
     "alembic>=1.20.0",
     "asyncpg>=0.32.0",
@@ -21,7 +21,7 @@ dev = [
 
 [tool.ruff]
 line-length = 79
-target-version = "py313"
+target-version = "py314"
 
 [tool.ruff.lint]
 select = [
