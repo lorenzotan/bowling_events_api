@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM python:3.14.8-slim-bookworm
+FROM python:3.14.9-slim-bookworm
 
 ARG USER=bowler
 
